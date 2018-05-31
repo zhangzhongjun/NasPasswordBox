@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+
+    <title>Password Box</title>
+    <link rel="stylesheet" href="lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+    </style>
+</head>
+
+<body>
+    
+<div>
+
+    <div>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#" onclick="showHome()">密码盒子</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li id="create_li"><a href="#" onclick="changePanel('create')">创建</a></li>
+                    <li id="mine_li"><a href="#" onclick="changePanel('mine')">我的</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a target="_blank" href="https://github.com/zhangzhongjun"><span class="glyphicon"></span>关于我</a></li>
+                    <li><a target="_blank" href="https://github.com/zhangzhongjun/NasPasswordBox/issues/new"><span class="glyphicon"></span>问题或建议反馈</a></li>
+                    <li><a target="_blank" href="https://github.com/ChengOrangeJu/WebExtensionWallet"><span class="glyphicon"></span>星云链浏览器插件</a></li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+    </div>
+
+    <div>
+        <div id="home">
+            <div class="panel panel-default">
+            <div class="panel-heading">介绍</div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <p class="text-primary">
+                        1、密码盒子基于星云链，帮助用户安全存储不同业务账号密码，永不丢失。<br>
+                        2、一个星云钱包地址对应一个盒子，一个盒子对应多个账号密码。<br>
+                        3、每个盒子需要一个盒子密码，在向盒子存储账号密码或者取出盒子内密码时需要用到盒子密码。<br>
+                    </p>
+                </li>
+            </ul>
+        </div>
+        </div>
+        <div id="create" style="display: none;">
+        <div class="panel panel-default">
+            <div class="panel-heading">添加一个密码</div>
+            <div class="panel-body">
+                <label>提示：</label>
+                <p class="text-danger">
+                    1、账号密码为你想保存的业务账号密码 如爱奇艺账号密码。<br>
+                    2、密码描述为你对保存密码的描述，方便在取密码时知道该密码对应的业务系统。<br>
+                    3、存储密码会消耗少量的瓦斯。
+                </p>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <label>请输入账号密码：</label><input type="text" class="form-control" name="" id="account_pwd">
+                    <br>
+                    <label id="account_pwd_hint" style="visibility: hidden;color: #FF0000"></label>
+                    <br>
+                </li>
+                <li class="list-group-item">
+                    <label>请输入密码描述：</label><input type="text" class="form-control" name="" id="account_pwd_desc">
+                    <br>
+                    <label id="account_pwd_desc_hint" style="visibility: hidden;color: #FF0000"></label>
+                    <br>
+                </li>
+                <li class="list-group-item">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="showSaveModal()">提交</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="mine" style="display: none;">
+        <div class="panel panel-default">
+            <div class="panel-heading">我的密码</div>
+            <div class="panel-body">
+                <label>提示：</label>
+                <p class="text-danger">
+                    1、钱包地址为您存储时所使用的星云钱包地址。<br>
+
+                </p>
+                <input type="text" class="form-control" name="" id="from" placeholder="请输入钱包地址">
+                <br>
+                <label id="from_hint" style="visibility: hidden;color: #FF0000"></label>
+                <br>
+                <br>
+                <button id="search" class="btn btn-primary" data-toggle="modal" onclick="showSearchModal()">查询</button>
+            </div>
+            <ul class="list-group" id="result_ul">
+            </ul>
+        </div>
+    </div>
+    </div>
+
+<!-- -->
+<div class="modal fade" id="boxPwdConfrimModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">
+                    请输入盒子密码
+                </h4>
+            </div>
+            <div class="modal-body">
+                <input type="password" name="pwd" id="box_pwd_create" class="form-control">
+                <br>
+                <label id="modal_hint1" style="visibility: hidden;color: #FF0000"></label>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_btn_create" type="button" class="btn btn-primary">
+                    确认
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- -->
+<div class="modal fade" id="boxPwdConfrimModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    请输入盒子密码
+                </h4>
+            </div>
+            <div class="modal-body">
+                <input type="password" name="pwd" id="box_pwd_search" class="form-control">
+                <br>
+                <label id="modal_hint" style="visibility: hidden;color: #FF0000"></label>
+                <br>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_btn_search" type="button" class="btn btn-primary">
+                    确认
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</div>
+<script src=lib/jquery-3.3.1.min.js></script>
+<script src=lib/nebPay.js></script>
+<script src=lib/bootstrap-3.3.7-dist/js/bootstrap.min.js></script>
+<script src=lib/nebulas.js></script>
+<script src=lib/crypto-js.js></script>
+<script>
+
+    "use strict";
+
+    //合约地址
+    var dappContractAddress = "n21Ta3WYpjdiUFP7pERuG3ZvowgywcPS2Ws";//n1hTu3ZSb2QfsVq5aLaocif9XFG6b43zMH8
+
+    var nebulas = require("nebulas");
+
+    var Account = nebulas.Account;
+    var neb = new nebulas.Neb();
+    neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+
+    // 加载核心加密库
+    // var CryptoJS = require("crypto-js");
+
+    // 点击提交之后触发的时间
+    function showSaveModal() {
+
+        $("#account_pwd_hint").css("visibility", "hidden");
+        $("#account_pwd_desc_hint").css("visibility", "hidden");
+
+        if (!$("#account_pwd").val()) {
+            $("#account_pwd_hint").css("visibility", "visible");
+            $("#account_pwd_hint").text("账号密码不能为空！请重新输入！");
+            return;
+        }
+
+        if (!$("#account_pwd_desc").val()) {
+            $("#account_pwd_desc_hint").css("visibility", "visible");
+            $("#account_pwd_desc_hint").text("密码描述不能为空！请重新输入！");
+            return;
+        } 
+
+        $("#boxPwdConfrimModal1").modal("show");
+    }
+
+    //点击查询之后触发的事件
+    function showSearchModal() {
+        if ($("#from").val()) {
+            $("#boxPwdConfrimModal").modal("show");
+        } else{
+            $("#from_hint").css("visibility", "visible");
+            $("#from_hint").text("钱包地址不能为空！请重新输入！");
+        }
+    }
+
+    //点击 左上角的密码盒子之后触发的事件
+    function showHome() {
+        $("#create").css("display","none");
+        $("#mine").css("display","none");
+        $("#create_li").removeClass();
+        $("#mine_li").removeClass();
+        $("#home").css("display", "block");
+    }
+
+    // 创建 和 查询 之间相互切换
+    // id 是要跳转到的界面 craete表示创建界面 mine表示我的界面
+    function changePanel(id) {
+        if (id === "create") {
+            $("#home").css("display", "none");
+            $("#create").css("display","block");
+            $("#mine").css("display","none");
+            $("#create_li").addClass("active");
+            $("#mine_li").removeClass();
+        } else {
+            $("#home").css("display", "none");
+            $("#create").css("display","none");
+            $("#mine").css("display","block");
+            $("#create_li").removeClass();
+            $("#mine_li").addClass("active");
+        }
+    }
+
+    // 保存密码时候 输入盒子密码 点击确认之后触发的事件
+    $("#confirm_btn_create").click(function() {
+        if ($("#box_pwd_create").val()) {
+            $('#boxPwdConfrimModal1').modal('hide')
+            save($("#box_pwd_create").val());
+        } else {
+            $("#modal_hint1").css("visibility", "visible");
+            $("#modal_hint1").text("盒子密码不能为空！请重新输入！");
+        }
+    })
+
+    // 搜索密码时候 输入盒子密码 点击确认之后触发的事件
+    $("#confirm_btn_search").click(function() {
+        if ($("#box_pwd_search").val()) {
+            $('#boxPwdConfrimModal').modal('hide')
+            search($("#box_pwd_search").val());
+        } else {
+            $("#modal_hint").css("visibility", "visible");
+            $("#modal_hint").text("盒子密码不能为空！请重新输入！");
+        }
+    })
+
+    // 输入盒子密码的提示框消失之后触发的事件
+    $('#boxPwdConfrimModal').on('hide.bs.modal', function () {
+        $("#modal_hint").css("visibility", "hidden");
+        $("#modal_hint").text("");
+   })
+
+    // 输入盒子密码的提示框消失之后触发的事件
+    $('#boxPwdConfrimModal1').on('hide.bs.modal', function () {
+        $("#modal_hint1").css("visibility", "hidden");
+        $("#modal_hint1").text("");
+   })
+
+    //对密码进行加密
+    function encPwd(boxPwd, accountPwd) {
+        var cipherPassword = CryptoJS.AES.encrypt(accountPwd, boxPwd);
+        return cipherPassword.toString();
+    }
+
+    // 对密码进行解密
+    // boxPwd 密钥
+    // cipherPassword 密文形式的密码
+    function decPwd(boxPwd, cipherPassword) {
+        var bytes  = CryptoJS.AES.decrypt(cipherPassword, boxPwd);
+        return bytes.toString(CryptoJS.enc.Utf8);;
+    }
+
+    // 保存密码 pwd是用户为自己的保险柜设置的密码
+    function save(pwd) {
+        var to = dappContractAddress;
+        var value = "0";
+        var callFunction = "save"
+        var callArgs = "[\"" + encPwd(pwd, $("#account_pwd").val()) + "\",\"" + $("#account_pwd_desc").val() + "\"]"
+
+        serialNumber = nebPay.call(to, value, callFunction, callArgs, { 
+            listener: saveResult        
+        });
+    }
+
+    // 保存密码的监听器 当
+    function saveResult(resp) {
+        console.log("saveResult: " + JSON.stringify(resp));
+    }
+
+    // 查找盒子中所有密码
+    function search(pwd){
+        var from = $("#from").val();
+        console.log("from: " + from);
+
+        var value = "0";
+        var nonce = "0"
+        var gas_price = "1000000"
+        var gas_limit = "2000000"
+        var callFunction = "get";
+        var callArgs = "";
+        var contract = {
+            "function": callFunction,
+            "args": callArgs
+        }
+
+        neb.api.call(from,dappContractAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+            searchResult(pwd,resp)
+        }).catch(function (err) {
+            console.log("error:" + err.message)
+            alert(err.message);
+        })
+
+    }
+
+    // 搜索结果的监听器
+    //boxPwd 作为解密算法密钥，是box的密码
+    // resp 返回值
+    function searchResult(boxPwd,resp) {
+        console.log("resp :" + resp);
+        var result = resp.result ;  //{"result":"{\"owner\":\"n1Sy7FDSqDTf17kjLjBjXgnWh68RFL2pZ4P\",\"passwords\":[\"{\\\"cipherPassword\\\":\\\"0\\\",\\\"description\\\":\\\"eddaa\\\"}\",\"{\\\"cipherPassword\\\":\\\"1\\\",\\\"description\\\":\\\"effafafafa\\\"}\",\"{\\\"cipherPassword\\\":\\\"2\\\",\\\"description\\\":\\\"afabbbaa\\\"}\"]}","execute_err":"","estimate_gas":"20194"}
+        console.log("result: " + JSON.stringify(result));
+
+        if (result === 'null'){
+            console.log("查询失败");
+        } else{
+            try{
+                result = JSON.parse(result)
+            }catch (err){
+                console.log("解析失败");
+            }
+            // 该用户的所有的密码
+            var passwords = result.passwords;
+            if (passwords) {
+                $("#result_ul").empty();
+                $("#result_ul").append("<li class=\"list-group-item active\">"+ "查询结果：" +"</li>");
+                $("#result_ul").append("<li><table class=\"table table-striped table-bordered table-hover table-condensed\" id=\"passwords_table\"><thead><tr><th>#</th> <th>账号密码</th><th>密码描述</th></tr></thead><tbody></tbody></table></li>");
+                for (var i = 0; i < passwords.length; i++) {
+                    $("#passwords_table tbody").append("<tr><td>" + i + "</td><td>" + decPwd(boxPwd, passwords[i].cipherPassword) + "</td><td>" + passwords[i].description + "</td></tr>");
+                    // $("#result_ul").append("<li class=\"list-group-item\">"+s+"</li>");
+                }
+            }
+        }
+    }
+
+    var NebPay = require("nebpay");  
+    var nebPay = new NebPay();
+    var serialNumber
+
+</script>
+</body>
+
+</html>
